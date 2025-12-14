@@ -4,49 +4,47 @@ const db_path = "./games.db";
 const db = new DatabaseSync(db_path);
 
 console.log("tworzenie tabel");
-db.exec(
-    `
-CREATE TABLE IF NOT EXISTS game_data(
-    game_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    game_title VARCHAR(50),
-    genre_id INTEGER,
-    platform_id INTEGER,
-    release_date DATE,
-    developer VARCHAR(50),
-    description VARCHAR(512),
-    link VARCHAR(512),
-    image VARCHAR(512)
-    );
+// db.exec(
+//     `
+// CREATE TABLE IF NOT EXISTS game_data(
+//     game_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     game_title VARCHAR(50),
+//     release_date DATE,
+//     developer VARCHAR(50),
+//     description VARCHAR(512),
+//     link VARCHAR(512),
+//     image VARCHAR(512)
+//     );
 
-    CREATE TABLE IF NOT EXISTS genres(
-    genre_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    genre_name VARCHAR(20)
-    );
+//     CREATE TABLE IF NOT EXISTS genres(
+//     genre_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     genre_name VARCHAR(20)
+//     );
 
-    CREATE TABLE IF NOT EXISTS platforms(
-    platform_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    plafrorm_name VARCHAR(20)
-    );
+//     CREATE TABLE IF NOT EXISTS platforms(
+//     platform_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     plafrorm_name VARCHAR(20)
+//     );
 
-    CREATE TABLE IF NOT EXISTS games_genres(
-    game_id INTEGER,
-    genre_id INTEGER,
+//     CREATE TABLE IF NOT EXISTS games_genres(
+//     game_id INTEGER,
+//     genre_id INTEGER,
 
-    PRIMARY KEY (game_id, genre_id),
-    FOREIGN KEY (game_id) REFERENCES games(game_id),
-    FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
-    );
+//     PRIMARY KEY (game_id, genre_id),
+//     FOREIGN KEY (game_id) REFERENCES games(game_id),
+//     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+//     );
 
-    CREATE TABLE IF NOT EXISTS games_platforms(
-    game_id INTEGER,
-    platform_id INTEGER,
+//     CREATE TABLE IF NOT EXISTS games_platforms(
+//     game_id INTEGER,
+//     platform_id INTEGER,
 	
-    FOREIGN KEY (game_id) REFERENCES games(game_id),
-    FOREIGN KEY (platform_id) REFERENCES platforms(platform_id)
-    );
-    `
+//     FOREIGN KEY (game_id) REFERENCES games(game_id),
+//     FOREIGN KEY (platform_id) REFERENCES platforms(platform_id)
+//     );
+//     `
 
-)
+// )
 
 
 export const games = {
