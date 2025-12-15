@@ -32,14 +32,7 @@ app.get("/games", (req, res) => {
 
 app.get("/games/:title", (req, res) => {
   const title = req.params.title;
-  if (title === "new") {
-    res.render("newGame", {
-      title: "Add New Game",
-      genres: getAllGenres(),
-      platforms: getAllPlatforms(),
-      form: {},
-    });
-  } else if (!getGameTitles().includes(title)) {
+  if (!getGameTitles().includes(title)) {
     res.status(404).end("Game not found");
   } else {
     res.render("game", {
@@ -50,8 +43,15 @@ app.get("/games/:title", (req, res) => {
     });
   }
 });
-
-app.post("/games/new", (req, res) => {
+app.get("/new", (req, res) => {
+  res.render("newGame", {
+      title: "Add New Game",
+      genres: getAllGenres(),
+      platforms: getAllPlatforms(),
+      form: {},
+  });
+});
+app.post("/new", (req, res) => {
   const { title, release_date, developer, description, link, logo } = req.body;
 
   const genres = getAllGenres();
@@ -69,17 +69,18 @@ app.post("/games/new", (req, res) => {
 
   //form error handling
   const errors = [];
-  if (!title || title.trim() === "") errors.push("Title is required.");
+  if (!title || title.trim() === "") 
+    errors.push("Title is required.");
+  if (newGenres.length === 0)
+    errors.push("At least one genre must be selected.");
+  if (newPlatforms.length === 0)
+    errors.push("At least one platform must be selected.");
   if (!release_date || release_date.trim() === "")
     errors.push("Release date is required.");
   if (!developer || developer.trim() === "")
     errors.push("Developer is required.");
   if (!description || description.trim() === "")
     errors.push("Description is required.");
-  if (newGenres.length === 0)
-    errors.push("At least one genre must be selected.");
-  if (newPlatforms.length === 0)
-    errors.push("At least one platform must be selected.");
 
   if (errors.length > 0) {
     return res.render("newGame", {
@@ -129,6 +130,17 @@ app.post("/games/new", (req, res) => {
     ).run(id, platformRow.platform_id);
   });
 
+  res.redirect(`/games/`);
+});
+
+app.get("/delete/:game_id", (req, res) => {
+  const gameId = req.params.game_id;
+
+  //usuniecie powiazan M-M
+  db.prepare("DELETE FROM games_genres WHERE game_id = ?").run(gameId);
+  db.prepare("DELETE FROM games_platforms WHERE game_id = ?").run(gameId);
+  //usuniecie gry
+  db.prepare("DELETE FROM game_data WHERE game_id = ?").run(gameId);
   res.redirect(`/games/`);
 });
 

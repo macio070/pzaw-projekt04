@@ -10,7 +10,7 @@
   <h1 class="m-4"><%= title %></h1>
 
   <form
-    action="/games/new"
+    action="/new"
     method="POST"
     class="d-flex flex-column align-items-center w-100"
   >
@@ -77,14 +77,13 @@
         class="form-control"
         id="developer"
         name="developer"
-        value="<%= form && form.developer ? form.developer : '' %>"
+        value="<%= form.developer ? form.developer : '' %>"
       />
     </div>
     <div class="mb-3 w-50">
       <label for="description" class="form-label">Description*</label>
-      <textarea class="form-control" id="description" name="description">
-<%= form && form.description ? form.description : '' %></textarea
-      >
+      <textarea rows="4" class="form-control" id="description" name="description">
+      <%= form.description ? form.description : '' %></textarea>
     </div>
     <div class="mb-3 w-50">
       <label for="link" class="form-label">Game URL</label>
@@ -93,7 +92,7 @@
         class="form-control"
         id="link"
         name="link"
-        value="<%= form && form.link ? form.link : '' %>"
+        value="<%= form.link ? form.link : '' %>"
       />
     </div>
     <div class="mb-3 w-50">
@@ -103,11 +102,13 @@
         class="form-control"
         id="logo"
         name="logo"
-        value="<%= form && form.logo ? form.logo : '' %>"
+        value="<%= form.logo ? form.logo : '' %>"
       />
     </div>
-    <button type="submit" class="btn btn-primary">Add Game</button>
+    <button type="submit" class="btn btn-primary mb-3">Add Game</button>
   </form>
 </main>
+
+<% console.log(form) %>
 
 <%- include('./partials/foot_partial.ejs') %>

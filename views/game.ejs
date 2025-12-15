@@ -1,5 +1,12 @@
 <%- include('./partials/head_partial.ejs') %>
 <% const release_date = new Date(gameData.release_date).toLocaleDateString() %>
+<script>
+  const deleteAlert = (id, title) => {
+    if(confirm(`Are you sure you want to delete ${title}?`)){
+      window.location.href=`/delete/${id}`;
+    }
+  }
+</script>
 <main class="container h-100 d-flex flex-column align-items-center">
   <a href="javascript:window.history.back()" class="btn btn-primary position-absolute m-3" style="width: 5rem; height: 2.5rem; left: 0">Back</a>
   <h1 class="m-4"><%= title %></h1>
@@ -58,6 +65,7 @@
         <% } %> 
       </li>
     </ul>
+    <button class="btn btn-danger align-self-end" onclick="deleteAlert(`<%= gameData.game_id %>`,`<%= gameData.game_title %>`)">delete</button>
   </div>
 </main>
 <%- include('./partials/foot_partial.ejs') %>
