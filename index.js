@@ -1,4 +1,5 @@
 import express from "express";
+import morgan from "morgan";
 import fs from "node:fs";
 import {
   getGameTitles,
@@ -17,6 +18,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
 const html = fs.readFileSync("public/index.html");
 app.get("/", (req, res) => {

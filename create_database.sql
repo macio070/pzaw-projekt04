@@ -1,4 +1,10 @@
 BEGIN TRANSACTION;
+DROP TABLE IF EXISTS "games_genres";
+DROP TABLE IF EXISTS "games_platforms";
+DROP TABLE IF EXISTS "genres";
+DROP TABLE IF EXISTS "platforms";
+DROP TABLE IF EXISTS "game_data";
+
 CREATE TABLE IF NOT EXISTS "game_data" (
 	"game_id"	INTEGER,
 	"game_title"	VARCHAR(50),
@@ -8,6 +14,16 @@ CREATE TABLE IF NOT EXISTS "game_data" (
 	"link"	VARCHAR(512),
 	"image"	VARCHAR(512),
 	PRIMARY KEY("game_id" AUTOINCREMENT)
+);
+CREATE TABLE IF NOT EXISTS "genres" (
+	"genre_id"	INTEGER,
+	"genre_name"	VARCHAR(20),
+	PRIMARY KEY("genre_id" AUTOINCREMENT)
+);
+CREATE TABLE IF NOT EXISTS "platforms" (
+	"platform_id"	INTEGER,
+	"platform_name"	VARCHAR(20),
+	PRIMARY KEY("platform_id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "games_genres" (
 	"game_id"	INTEGER,
@@ -22,16 +38,6 @@ CREATE TABLE IF NOT EXISTS "games_platforms" (
 	PRIMARY KEY("game_id","platform_id"),
 	FOREIGN KEY("game_id") REFERENCES "game_data"("game_id"),
 	FOREIGN KEY("platform_id") REFERENCES "platforms"("platform_id")
-);
-CREATE TABLE IF NOT EXISTS "genres" (
-	"genre_id"	INTEGER,
-	"genre_name"	VARCHAR(20),
-	PRIMARY KEY("genre_id" AUTOINCREMENT)
-);
-CREATE TABLE IF NOT EXISTS "platforms" (
-	"platform_id"	INTEGER,
-	"platform_name"	VARCHAR(20),
-	PRIMARY KEY("platform_id" AUTOINCREMENT)
 );
 INSERT INTO "game_data" ("game_id","game_title","release_date","developer","description","link","image") VALUES (1,'Valorant','2020-06-02','Riot Games','A team-based tactical shooter that relies on precise gunplay and unique agent abilities.','https://playvalorant.com/','../assets/valorant_logo.png'),
  (2,'The Witcher 3: Wild Hunt','2015-05-19','CD Projekt Red','An open-world RPG following Geralt of Rivia on his quest.','https://thewitcher.com/en/witcher3','../assets/thewitcher_logo.png'),
