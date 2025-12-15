@@ -9,11 +9,11 @@
 </script>
 <main class="container h-100 d-flex flex-column align-items-center">
   <a href="javascript:window.history.back()" class="btn btn-primary position-absolute m-3" style="width: 5rem; height: 2.5rem; left: 0">Back</a>
+  <a href="/" class="btn btn-main-menu position-absolute m-3" style="width: 5rem; height: 2.5rem; right: 0">Menu</a>
+  
   <h1 class="m-4"><%= title %></h1>
 
-  <div
-    class="d-flex fs-4 flex-column justify-content-center align-items-center"
-  >
+  <div class="d-flex fs-4 flex-column justify-content-center align-items-center">
     <img
       src="<%= gameData.image %>"
       alt="<%= gameData.game_title %>"
@@ -65,7 +65,12 @@
         <% } %> 
       </li>
     </ul>
-    <button class="btn btn-danger align-self-end" onclick="deleteAlert(`<%= gameData.game_id %>`,`<%= gameData.game_title %>`)">delete</button>
+    <div class="w-100">
+        <div class="btn-group d-flex">
+          <a href="/edit/<%= gameData.game_id %>" class="btn btn-warning me-2 align-self-start">edit</a>
+          <button class="btn btn-danger align-self-end" onclick="deleteAlert(`<%= gameData.game_id %>`,`<%= gameData.game_title %>`)">delete</button>
+        </div>
+    </div>
   </div>
 </main>
 <%- include('./partials/foot_partial.ejs') %>

@@ -126,6 +126,10 @@ export const getGameData = (title) => {
     const data = db.prepare(`SELECT * FROM game_data WHERE game_title=?`).get(title);
     return data
 }
+export const getGameDataID = (id) => {
+    const data = db.prepare(`SELECT * FROM game_data WHERE game_id=?`).get(id);
+    return data
+}
 
 export const getAllGameImages = () => {
     const images = [];

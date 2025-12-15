@@ -2,7 +2,7 @@
 
 <main class="container h-100 d-flex flex-column align-items-center">
   <a
-    href="./"
+    href="/games/"
     class="btn btn-primary position-absolute m-3"
     style="width: 5rem; height: 2.5rem; left: 0"
     >Back</a
@@ -10,7 +10,7 @@
   <h1 class="m-4"><%= title %></h1>
 
   <form
-    action="/new"
+    action="/edit/<%= gameId %>"
     method="POST"
     class="d-flex flex-column align-items-center w-100"
   >
@@ -104,7 +104,7 @@
         value="<%= form.logo ? form.logo : '' %>"
       />
     </div>
-    <button type="submit" class="btn btn-primary mb-3">Add Game</button>
+    <button type="submit" class="btn btn-warning mb-3">Edit Game</button>
   </form>
 </main>
 
