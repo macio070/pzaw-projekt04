@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS "games_platforms";
 DROP TABLE IF EXISTS "genres";
 DROP TABLE IF EXISTS "platforms";
 DROP TABLE IF EXISTS "game_data";
+DROP TABLE IF EXISTS "users";
 
 CREATE TABLE IF NOT EXISTS "game_data" (
 	"game_id"	INTEGER,
@@ -38,6 +39,12 @@ CREATE TABLE IF NOT EXISTS "games_platforms" (
 	PRIMARY KEY("game_id","platform_id"),
 	FOREIGN KEY("game_id") REFERENCES "game_data"("game_id"),
 	FOREIGN KEY("platform_id") REFERENCES "platforms"("platform_id")
+);
+CREATE TABLE IF NOT EXISTS "users" (
+	"user_id" INTEGER,
+	"user_login" VARCHAR(100) NOT NULL,
+	"user_password" TEXT NOT NULL,
+	PRIMARY KEY("user_id" AUTOINCREMENT)
 );
 INSERT INTO "game_data" ("game_id","game_title","release_date","developer","description","link","image") VALUES (1,'Valorant','2020-06-02','Riot Games','A team-based tactical shooter that relies on precise gunplay and unique agent abilities.','https://playvalorant.com/','../assets/valorant_logo.png'),
  (2,'The Witcher 3: Wild Hunt','2015-05-19','CD Projekt Red','An open-world RPG following Geralt of Rivia on his quest.','https://thewitcher.com/en/witcher3','../assets/thewitcher_logo.png'),
