@@ -24,7 +24,6 @@ const html = fs.readFileSync("public/index.html");
 app.get("/", (req, res) => {
   res.end(html);
 });
-
 app.get("/games", (req, res) => {
   res.render("games", {
     title: "List of Video Games",
@@ -265,6 +264,15 @@ app.get("/login", (req, res) => {
     form: {}
    })
 });
+
+app.get("/register", (req, res) => {
+   res.render("register", {
+    title: "Register form",
+    form: {}
+   })
+});
+
+app.get("/")
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
