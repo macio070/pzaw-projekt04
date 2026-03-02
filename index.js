@@ -15,6 +15,9 @@ import {
 const port = 8000;
 
 const app = express();
+
+const bcrypt = require("bcryptjs");
+
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -54,7 +57,7 @@ app.get("/new", (req, res) => {
   });
 });
 app.post("/new", (req, res) => {
-    const { title, release_date, developer, description, link, logo } = req.body;
+  const { title, release_date, developer, description, link, logo } = req.body;
 
   const genres = getAllGenres();
   const platforms = getAllPlatforms();
@@ -258,21 +261,36 @@ app.get("/random", (req, res) => {
   res.redirect(`/games/${randomTitle}`);
 });
 
+//accounts management
+
 app.get("/login", (req, res) => {
-   res.render("login", {
+  res.render("login", {
     title: "Login form",
-    form: {}
-   })
+    form: {},
+  });
 });
 
 app.get("/register", (req, res) => {
-   res.render("register", {
+  res.render("register", {
     title: "Register form",
-    form: {}
-   })
+    form: {},
+  });
 });
 
-app.get("/")
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  // Encryption of the string password
+  bcrypt.genSalt(10, function (err, Salt) {
+    // The bcrypt is used for encrypting password.
+    bcrypt.hash(password, Salt, function (err, hash) {
+      if (err) {
+        return console.log("Cannot encrypt");
+      }
+      const password = hash;
+    });
+  });
+  //todo
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
