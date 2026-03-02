@@ -259,6 +259,13 @@ app.get("/random", (req, res) => {
   res.redirect(`/games/${randomTitle}`);
 });
 
+app.get("/login", (req, res) => {
+   res.render("login", {
+    title: "Login form",
+    form: {}
+   })
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
