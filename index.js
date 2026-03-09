@@ -17,6 +17,8 @@ const port = 8000;
 
 const app = express();
 
+const bcrypt = import("bcryptjs");
+
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
