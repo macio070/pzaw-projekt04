@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import fs from "node:fs";
+import * as bcrypt from "bcrypt";
 import {
   getGameTitles,
   getGameData,
@@ -15,8 +16,6 @@ import {
 const port = 8000;
 
 const app = express();
-
-const bcrypt = require("bcryptjs");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -277,19 +276,21 @@ app.get("/register", (req, res) => {
   });
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const email = req.body.email;
-  // Encryption of the string password
-  bcrypt.genSalt(10, function (err, Salt) {
-    // The bcrypt is used for encrypting password.
-    bcrypt.hash(password, Salt, function (err, hash) {
-      if (err) {
-        return console.log("Cannot encrypt");
-      }
-      const password = hash;
-    });
+
+  const nigger = await bcrypt.hash(req.body.password, 10).then(function (hash) {
+    const res2 = db
+      .prepare("SELECT * FROM users WHERE user_email = ?")
+      .get(email);
+      console.log("test");
+    console.log(res2);
+    // db.prepare("INSERT INTO users VALUES (null, ?, ?)").run(email, password);
+  }).err(function(e){
+    console.log("fuck niggers")
+    console.log(e)
   });
-  //todo
+  console.log(nigger);
 });
 
 app.listen(port, () => {

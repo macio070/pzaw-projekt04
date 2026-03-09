@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS "games_platforms" (
 );
 CREATE TABLE IF NOT EXISTS "users" (
 	"user_id" INTEGER,
-	"user_login" VARCHAR(100) NOT NULL,
+	"user_email" VARCHAR(100) NOT NULL,
 	"user_password" TEXT NOT NULL,
 	PRIMARY KEY("user_id" AUTOINCREMENT)
 );
