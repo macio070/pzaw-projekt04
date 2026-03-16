@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS "game_data" (
 	"description"	VARCHAR(2000),
 	"link"	VARCHAR(512),
 	"image"	VARCHAR(512),
-	PRIMARY KEY("game_id" AUTOINCREMENT)
+	"user_id" INTEGER,
+	PRIMARY KEY("game_id" AUTOINCREMENT),
+	FOREIGN KEY ("user_id") REFERENCES "users"("user_id")
 );
 CREATE TABLE IF NOT EXISTS "genres" (
 	"genre_id"	INTEGER,
