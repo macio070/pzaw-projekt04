@@ -17,8 +17,6 @@ const port = 8000;
 
 const app = express();
 
-const bcrypt = import("bcryptjs");
-
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -98,14 +96,14 @@ app.post("/new", (req, res) => {
   }
 
   db.prepare(
-    "INSERT INTO game_data (game_title, release_date, developer, description, link, image) VALUES (?, ?, ?, ?, ?, ?)"
+    "INSERT INTO game_data (game_title, release_date, developer, description, link, image) VALUES (?, ?, ?, ?, ?, ?)",
   ).run(
     title,
     release_date,
     developer,
     description,
     link || null,
-    logo || null
+    logo || null,
   );
 
   //pobieranie id nowo dodanej gry
@@ -121,7 +119,7 @@ app.post("/new", (req, res) => {
       .get(newGenre);
     //dodawanie do relacji M-M nowo dodanej gry i wybranego gatunku
     db.prepare(
-      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)"
+      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)",
     ).run(id, genreRow.genre_id);
   });
 
@@ -131,7 +129,7 @@ app.post("/new", (req, res) => {
       .prepare("SELECT platform_id FROM platforms WHERE platform_name = ?")
       .get(newPlatform);
     db.prepare(
-      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)"
+      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)",
     ).run(id, platformRow.platform_id);
   });
 
@@ -223,14 +221,14 @@ app.post("/edit/:game_id", (req, res) => {
   }
 
   db.prepare(
-    "UPDATE game_data SET game_title = ?, release_date = ?, developer = ?, description = ?, link = ?, image = ? WHERE game_id = ?"
+    "UPDATE game_data SET game_title = ?, release_date = ?, developer = ?, description = ?, link = ?, image = ? WHERE game_id = ?",
   ).run(
     title,
     release_date,
     developer,
     description,
     link || null,
-    logo || null
+    logo || null,
   );
 
   db.prepare("DELETE FROM games_genres WHERE game_id = ?").run(id);
@@ -240,7 +238,7 @@ app.post("/edit/:game_id", (req, res) => {
       .get(newGenre);
 
     db.prepare(
-      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)"
+      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)",
     ).run(id, genreRow.genre_id);
   });
 
@@ -250,7 +248,7 @@ app.post("/edit/:game_id", (req, res) => {
       .prepare("SELECT platform_id FROM platforms WHERE platform_name = ?")
       .get(newPlatform);
     db.prepare(
-      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)"
+      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)",
     ).run(id, platformRow.platform_id);
   });
 
@@ -279,22 +277,29 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const email = req.body.email;
+  const login = req.body.login;
 
-  const nigger = await bcrypt.hash(req.body.password, 10).then(function (hash) {
-    const res2 = db
-      .prepare("SELECT * FROM users WHERE user_email = ?")
-      .get(email);
-      console.log("test");
-    console.log(res2);
-    // db.prepare("INSERT INTO users VALUES (null, ?, ?)").run(email, password);
-  }).err(function(e){
-    console.log("fuck niggers")
-    console.log(e)
-  });
-  console.log(nigger);
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  //check if user with the same login already exists
+  const existingUser = getExistingUser(login);
+  if (existingUser) {
+    console.error("User with this login already exists");
+    res.redirect(`/games/`);
+    return;
+  }
+
+  db.prepare("INSERT INTO users (user_login, user_password) VALUES (?, ?)").run(
+    login,
+    hashedPassword,
+  );
+  res.redirect(`/games/`);
+  return;
 });
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+const getExistingUser = (login) => {
+  return db.prepare("SELECT * FROM users WHERE user_login = ?").get(login);
+};
