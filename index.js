@@ -269,6 +269,26 @@ app.get("/login", (req, res) => {
   });
 });
 
+app.post("/login", async (req, res) => {
+  const login = req.body.login;
+  const password = req.body.password;
+  const user = getExistingUser(login);
+  if (!user) {
+    console.error("User not found");
+    res.redirect(`/games/`);
+    return;
+  }
+  const passwordMatch = await bcrypt.compare(password, user.user_password);
+  if (!passwordMatch) {
+    console.error("Incorrect password");
+    res.redirect(`/games/`);
+    return;
+  }
+  //todo: create session and store user info in it
+  console.log("User logged in successfully");
+  res.redirect(`/games/`);
+});
+
 app.get("/register", (req, res) => {
   res.render("register", {
     title: "Register form",
@@ -292,8 +312,9 @@ app.post("/register", async (req, res) => {
     login,
     hashedPassword,
   );
+  //todo: create session and store user info in it
+  console.log("User registered successfully");
   res.redirect(`/games/`);
-  return;
 });
 
 app.listen(port, () => {
