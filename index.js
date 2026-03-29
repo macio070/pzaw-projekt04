@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "dev_test_123",
+    secret: randomBytes(32).toString('hex'),
     resave: false, // only save when something actually changed
     saveUninitialized: false, // don't create empty sessions for unauthenticated users
     cookie: {
