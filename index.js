@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import fs from "node:fs";
 import * as bcrypt from "bcrypt";
+import session from "express-session"
 import {
   getGameTitles,
   getGameData,
@@ -21,17 +22,41 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev_test_123",
+    resave: false, // only save when something actually changed
+    saveUninitialized: false, // don't create empty sessions for unauthenticated users
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    },
+  }),
+);
 
 const html = fs.readFileSync("public/index.html");
 app.get("/", (req, res) => {
   res.end(html);
 });
 app.get("/games", (req, res) => {
-  res.render("games", {
-    title: "List of Video Games",
-    games: getGameTitles(),
-    images: getAllGameImages(),
-  });
+  if (req.session.user) {
+    console.log("Logged in as:", req.session.user.login);
+    res.render("games", {
+      title: "List of Video Games",
+      games: getGameTitles(),
+      images: getAllGameImages(),
+      user: req.session.user,
+    });
+  } else {
+    res.render("games", {
+      title: "List of Video Games",
+      games: getGameTitles(),
+      images: getAllGameImages(),
+      user: null
+    });
+  }
 });
 
 app.get("/games/:title", (req, res) => {
@@ -275,18 +300,29 @@ app.post("/login", async (req, res) => {
   const user = getExistingUser(login);
   if (!user) {
     console.error("User not found");
-    res.redirect(`/games/`);
-    return;
+    return res.redirect(`/games/`);
   }
   const passwordMatch = await bcrypt.compare(password, user.user_password);
   if (!passwordMatch) {
     console.error("Incorrect password");
-    res.redirect(`/games/`);
-    return;
+    return res.redirect(`/games/`);
   }
-  //todo: create session and store user info in it
-  console.log("User logged in successfully");
-  res.redirect(`/games/`);
+  // === SESSION CREATION (secure way) ===
+  req.session.regenerate((err) => {
+    // prevents session fixation attack
+    if (err) {
+      console.error("Session regenerate error:", err);
+      return res.redirect(`/games/`);
+    }
+
+    // Store ONLY safe, minimal data
+    req.session.user = {
+      login: user.user_login,
+      id: user.user_id,
+    };
+    console.log("User logged in successfully");
+    res.redirect(`/games/`);
+  });
 });
 
 app.get("/register", (req, res) => {
@@ -312,9 +348,34 @@ app.post("/register", async (req, res) => {
     login,
     hashedPassword,
   );
-  //todo: create session and store user info in it
-  console.log("User registered successfully");
-  res.redirect(`/games/`);
+
+  // Optional: get the newly created user (recommended)
+  const newUser = getExistingUser(login); // or use info.lastInsertRowid if you added an ID column
+
+  // === SESSION CREATION (same secure pattern) ===
+  req.session.regenerate((err) => {
+    if (err) {
+      console.error("Session regenerate error:", err);
+      return res.redirect(`/games/`);
+    }
+
+    req.session.user = {
+      login: newUser.user_login,
+      id: newUser.user_id,
+    };
+    console.log("User registered successfully");
+    res.redirect(`/games/`);
+  });
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Session destroy error:", err);
+    }
+    res.clearCookie('connect.sid') //domyslna nazwa dla express-session
+    res.redirect("/games/");
+  });
 });
 
 app.listen(port, () => {
