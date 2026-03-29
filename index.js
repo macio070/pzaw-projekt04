@@ -44,6 +44,7 @@ app.get("/", (req, res) => {
 app.get("/games", (req, res) => {
   if (req.session.user) {
     console.log("Logged in as:", req.session.user.login);
+    console.log(req.session.user.id)
     res.render("games", {
       title: "List of Video Games",
       games: getGameTitles(),
@@ -51,12 +52,7 @@ app.get("/games", (req, res) => {
       user: req.session.user,
     });
   } else {
-    res.render("games", {
-      title: "List of Video Games",
-      games: getGameTitles(),
-      images: getAllGameImages(),
-      user: null
-    });
+    res.redirect("/login")
   }
 });
 
@@ -74,6 +70,10 @@ app.get("/games/:title", (req, res) => {
   }
 });
 app.get("/new", (req, res) => {
+  if (!req.session.user){
+    console.error("user is not logged in")
+    return res.redirect("/login")
+  }
   res.render("newGame", {
     title: "Add New Game",
     genres: getAllGenres(),
@@ -82,6 +82,10 @@ app.get("/new", (req, res) => {
   });
 });
 app.post("/new", (req, res) => {
+  if (!req.session.user){
+    console.error("user is not logged in")
+    return res.redirect("/login")
+  }
   const { title, release_date, developer, description, link, logo } = req.body;
 
   const genres = getAllGenres();
@@ -163,6 +167,10 @@ app.post("/new", (req, res) => {
 });
 
 app.get("/delete/:game_id", (req, res) => {
+  if (!req.session.user){
+    console.error("user is not logged in")
+    return res.redirect("/login")
+  }
   const gameId = req.params.game_id;
 
   //usuniecie powiazan M-M
@@ -174,6 +182,10 @@ app.get("/delete/:game_id", (req, res) => {
 });
 
 app.get("/edit/:game_id", (req, res) => {
+  if (!req.session.user){
+    console.error("user is not logged in")
+    return res.redirect("/login")
+  }
   const gameId = req.params.game_id;
   const allGenres = getAllGenres();
   const allPlatforms = getAllPlatforms();
@@ -206,6 +218,10 @@ app.get("/edit/:game_id", (req, res) => {
 });
 
 app.post("/edit/:game_id", (req, res) => {
+  if (!req.session.user){
+    console.error("user is not logged in")
+    return res.redirect("/login")
+  }
   const { title, release_date, developer, description, link, logo } = req.body;
   const id = req.params.game_id;
 
