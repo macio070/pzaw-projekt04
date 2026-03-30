@@ -2,7 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import fs from "node:fs";
 import * as bcrypt from "bcrypt";
-import session from "express-session"
+import session from "express-session";
 import {
   getGameTitles,
   getGameData,
@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(
   session({
-    secret: randomBytes(32).toString('hex'),
+    secret: randomBytes(32).toString("hex"),
     resave: false, // only save when something actually changed
     saveUninitialized: false, // don't create empty sessions for unauthenticated users
     cookie: {
@@ -34,7 +34,7 @@ app.use(
       sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
-  }),
+  })
 );
 
 const html = fs.readFileSync("public/index.html");
@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
 app.get("/games", (req, res) => {
   if (req.session.user) {
     console.log("Logged in as:", req.session.user.login);
-    console.log(req.session.user.id, req.session.user.is_admin)
+    console.log(req.session.user.id, req.session.user.is_admin);
     res.render("games", {
       title: "List of Video Games",
       games: getGameTitles(req.session.user.id, req.session.user.is_admin),
@@ -52,13 +52,17 @@ app.get("/games", (req, res) => {
       user: req.session.user,
     });
   } else {
-    res.redirect("/login")
+    res.redirect("/login");
   }
 });
 
 app.get("/games/:title", (req, res) => {
   const title = req.params.title;
-  if (!getGameTitles(req.session.user.id, req.session.user.is_admin).includes(title)) {
+  if (
+    !getGameTitles(req.session.user.id, req.session.user.is_admin).includes(
+      title
+    )
+  ) {
     res.status(404).end("Game not found");
   } else {
     res.render("game", {
@@ -70,9 +74,9 @@ app.get("/games/:title", (req, res) => {
   }
 });
 app.get("/new", (req, res) => {
-  if (!req.session.user){
-    console.error("user is not logged in")
-    return res.redirect("/login")
+  if (!req.session.user) {
+    console.error("user is not logged in");
+    return res.redirect("/login");
   }
   res.render("newGame", {
     title: "Add New Game",
@@ -82,9 +86,9 @@ app.get("/new", (req, res) => {
   });
 });
 app.post("/new", (req, res) => {
-  if (!req.session.user){
-    console.error("user is not logged in")
-    return res.redirect("/login")
+  if (!req.session.user) {
+    console.error("user is not logged in");
+    return res.redirect("/login");
   }
   const { title, release_date, developer, description, link, logo } = req.body;
 
@@ -126,7 +130,7 @@ app.post("/new", (req, res) => {
   }
 
   db.prepare(
-    "INSERT INTO game_data (game_title, release_date, developer, description, link, image, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO game_data (game_title, release_date, developer, description, link, image, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
   ).run(
     title,
     release_date,
@@ -150,7 +154,7 @@ app.post("/new", (req, res) => {
       .get(newGenre);
     //dodawanie do relacji M-M nowo dodanej gry i wybranego gatunku
     db.prepare(
-      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)",
+      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)"
     ).run(id, genreRow.genre_id);
   });
 
@@ -160,7 +164,7 @@ app.post("/new", (req, res) => {
       .prepare("SELECT platform_id FROM platforms WHERE platform_name = ?")
       .get(newPlatform);
     db.prepare(
-      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)",
+      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)"
     ).run(id, platformRow.platform_id);
   });
 
@@ -168,9 +172,9 @@ app.post("/new", (req, res) => {
 });
 
 app.get("/delete/:game_id", (req, res) => {
-  if (!req.session.user){
-    console.error("user is not logged in")
-    return res.redirect("/login")
+  if (!req.session.user) {
+    console.error("user is not logged in");
+    return res.redirect("/login");
   }
   const gameId = req.params.game_id;
 
@@ -183,9 +187,9 @@ app.get("/delete/:game_id", (req, res) => {
 });
 
 app.get("/edit/:game_id", (req, res) => {
-  if (!req.session.user){
-    console.error("user is not logged in")
-    return res.redirect("/login")
+  if (!req.session.user) {
+    console.error("user is not logged in");
+    return res.redirect("/login");
   }
   const gameId = req.params.game_id;
   const allGenres = getAllGenres();
@@ -219,9 +223,9 @@ app.get("/edit/:game_id", (req, res) => {
 });
 
 app.post("/edit/:game_id", (req, res) => {
-  if (!req.session.user){
-    console.error("user is not logged in")
-    return res.redirect("/login")
+  if (!req.session.user) {
+    console.error("user is not logged in");
+    return res.redirect("/login");
   }
   const { title, release_date, developer, description, link, logo } = req.body;
   const id = req.params.game_id;
@@ -264,14 +268,14 @@ app.post("/edit/:game_id", (req, res) => {
   }
 
   db.prepare(
-    "UPDATE game_data SET game_title = ?, release_date = ?, developer = ?, description = ?, link = ?, image = ? WHERE game_id = ?",
+    "UPDATE game_data SET game_title = ?, release_date = ?, developer = ?, description = ?, link = ?, image = ? WHERE game_id = ?"
   ).run(
     title,
     release_date,
     developer,
     description,
     link || null,
-    logo || null,
+    logo || null
   );
 
   db.prepare("DELETE FROM games_genres WHERE game_id = ?").run(id);
@@ -281,7 +285,7 @@ app.post("/edit/:game_id", (req, res) => {
       .get(newGenre);
 
     db.prepare(
-      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)",
+      "INSERT INTO games_genres (game_id, genre_id) VALUES (?, ?)"
     ).run(id, genreRow.genre_id);
   });
 
@@ -291,13 +295,17 @@ app.post("/edit/:game_id", (req, res) => {
       .prepare("SELECT platform_id FROM platforms WHERE platform_name = ?")
       .get(newPlatform);
     db.prepare(
-      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)",
+      "INSERT INTO games_platforms (game_id, platform_id) VALUES (?, ?)"
     ).run(id, platformRow.platform_id);
   });
 
   res.redirect(`/games/`);
 });
 app.get("/random", (req, res) => {
+  if (!req.session.user) {
+    console.error("user is not logged in");
+    return res.redirect("/login");
+  }
   const titles = getGameTitles(req.session.user.id, req.session.user.is_admin);
   const randomTitle = titles[Math.floor(Math.random() * titles.length)];
   res.redirect(`/games/${randomTitle}`);
@@ -337,7 +345,7 @@ app.post("/login", async (req, res) => {
     req.session.user = {
       login: user.user_login,
       id: user.user_id,
-      is_admin: user.is_admin
+      is_admin: user.is_admin,
     };
     console.log("User logged in successfully");
     res.redirect(`/games/`);
@@ -365,7 +373,7 @@ app.post("/register", async (req, res) => {
 
   db.prepare("INSERT INTO users (user_login, user_password) VALUES (?, ?)").run(
     login,
-    hashedPassword,
+    hashedPassword
   );
 
   // Optional: get the newly created user (recommended)
@@ -392,7 +400,7 @@ app.get("/logout", (req, res) => {
     if (err) {
       console.error("Session destroy error:", err);
     }
-    res.clearCookie('connect.sid') //domyslna nazwa dla express-session
+    res.clearCookie("connect.sid"); //domyslna nazwa dla express-session
     res.redirect("/games/");
   });
 });
