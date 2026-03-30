@@ -43,8 +43,6 @@ app.get("/", (req, res) => {
 });
 app.get("/games", (req, res) => {
   if (req.session.user) {
-    console.log("Logged in as:", req.session.user.login);
-    console.log(req.session.user.id, req.session.user.is_admin);
     res.render("games", {
       title: "List of Video Games",
       games: getGameTitles(req.session.user.id, req.session.user.is_admin),
