@@ -44,11 +44,11 @@ app.get("/", (req, res) => {
 app.get("/games", (req, res) => {
   if (req.session.user) {
     console.log("Logged in as:", req.session.user.login);
-    console.log(req.session.user.id)
+    console.log(req.session.user.id, req.session.user.is_admin)
     res.render("games", {
       title: "List of Video Games",
-      games: getGameTitles(),
-      images: getAllGameImages(),
+      games: getGameTitles(req.session.user.id, req.session.user.is_admin),
+      images: getAllGameImages(req.session.user.id, req.session.user.is_admin),
       user: req.session.user,
     });
   } else {
@@ -58,7 +58,7 @@ app.get("/games", (req, res) => {
 
 app.get("/games/:title", (req, res) => {
   const title = req.params.title;
-  if (!getGameTitles().includes(title)) {
+  if (!getGameTitles(req.session.user.id, req.session.user.is_admin).includes(title)) {
     res.status(404).end("Game not found");
   } else {
     res.render("game", {
@@ -126,7 +126,7 @@ app.post("/new", (req, res) => {
   }
 
   db.prepare(
-    "INSERT INTO game_data (game_title, release_date, developer, description, link, image) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO game_data (game_title, release_date, developer, description, link, image, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
   ).run(
     title,
     release_date,
@@ -134,6 +134,7 @@ app.post("/new", (req, res) => {
     description,
     link || null,
     logo || null,
+    req.session.user.id
   );
 
   //pobieranie id nowo dodanej gry
@@ -297,7 +298,7 @@ app.post("/edit/:game_id", (req, res) => {
   res.redirect(`/games/`);
 });
 app.get("/random", (req, res) => {
-  const titles = getGameTitles();
+  const titles = getGameTitles(req.session.user.id, req.session.user.is_admin);
   const randomTitle = titles[Math.floor(Math.random() * titles.length)];
   res.redirect(`/games/${randomTitle}`);
 });
@@ -336,6 +337,7 @@ app.post("/login", async (req, res) => {
     req.session.user = {
       login: user.user_login,
       id: user.user_id,
+      is_admin: user.is_admin
     };
     console.log("User logged in successfully");
     res.redirect(`/games/`);

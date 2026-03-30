@@ -14,9 +14,10 @@ if (process.env.POPULATE_DB) {
   console.log("Database populated.");
 }
 
-export const getGameTitles = () => {
+export const getGameTitles = (user_id, is_admin = 0) => {
   let titles = [];
-  const query = db.prepare("SELECT game_title FROM game_data").all();
+  const query = is_admin ? (db.prepare("SELECT game_title FROM game_data").all()) : db.prepare("SELECT game_title FROM game_data WHERE user_id=?").all(user_id);
+  console.log(query)
   query.forEach((title) => {
     titles.push(title.game_title);
   });
@@ -33,9 +34,9 @@ export const getGameDataID = (id) => {
   return data;
 };
 
-export const getAllGameImages = () => {
+export const getAllGameImages = (user_id, is_admin = 0) => {
   const images = [];
-  const games = getGameTitles();
+  const games = getGameTitles(user_id, is_admin);
   games.forEach((game) => {
     images.push({
       title: getGameData(game).game_title,
