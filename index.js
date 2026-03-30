@@ -26,7 +26,7 @@ app.use(morgan("dev"));
 app.use(
   session({
     secret: randomBytes(32).toString("hex"),
-    resave: false, // only save when something actually changed
+    resave: false,
     saveUninitialized: false, // don't create empty sessions for unauthenticated users
     cookie: {
       secure: false,
@@ -331,15 +331,11 @@ app.post("/login", async (req, res) => {
     console.error("Incorrect password");
     return res.redirect(`/games/`);
   }
-  // === SESSION CREATION (secure way) ===
   req.session.regenerate((err) => {
-    // prevents session fixation attack
     if (err) {
       console.error("Session regenerate error:", err);
       return res.redirect(`/games/`);
     }
-
-    // Store ONLY safe, minimal data
     req.session.user = {
       login: user.user_login,
       id: user.user_id,
@@ -374,10 +370,8 @@ app.post("/register", async (req, res) => {
     hashedPassword
   );
 
-  // Optional: get the newly created user (recommended)
-  const newUser = getExistingUser(login); // or use info.lastInsertRowid if you added an ID column
+  const newUser = getExistingUser(login);
 
-  // === SESSION CREATION (same secure pattern) ===
   req.session.regenerate((err) => {
     if (err) {
       console.error("Session regenerate error:", err);
